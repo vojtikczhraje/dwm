@@ -806,12 +806,12 @@ drawbar(Monitor *m)
     }
     x = 0;
     for (i = 0; i < LENGTH(tags); i++) {
-        if ((m->tagset[m->seltags] >> i) & 1) { // Display only the active tag
+        // Check if the tag is the current tag or if it is occupied
+        if ((m->tagset[m->seltags] >> i) & 1 || (occ & 1 << i)) {
             w = TEXTW(tags[i]);
-            drw_setscheme(drw, scheme[SchemeSel]);
+            drw_setscheme(drw, (m->tagset[m->seltags] >> i) & 1 ? scheme[SchemeSel] : scheme[SchemeNorm]);
             drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-            x += w; // Update x to the width of the active tag
-            break; // Break after displaying the active tag
+            x += w; // Update x to the width of the tag
         }
     }
 
@@ -827,6 +827,9 @@ drawbar(Monitor *m)
     }
     drw_map(drw, m->barwin, 0, 0, m->ww, bh);
 }
+
+
+
 
 void
 drawbars(void)
